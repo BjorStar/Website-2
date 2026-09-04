@@ -78,14 +78,12 @@ function toggleLike(username) {
     likedProfiles.push(username);
   }
 
-  // Save to localStorage
   localStorage.setItem("likedProfiles", JSON.stringify(likedProfiles));
-
   renderProfiles(currentProfileList);
 }
 
 // =========================
-// LOAD PROFILES (with demo filtering)
+// LOAD PROFILES
 // =========================
 
 async function loadProfiles(interest) {
@@ -236,7 +234,7 @@ document.getElementById("login-form").addEventListener("submit", async e => {
 });
 
 // =========================
-// UI SWITCHING
+// AUTH UI SWITCHING (FIXED)
 // =========================
 
 document.getElementById("show-login").addEventListener("click", () => {
@@ -244,8 +242,8 @@ document.getElementById("show-login").addEventListener("click", () => {
   searchSection.style.display = "none";
   accountSection.style.display = "none";
 
-  document.getElementById("login-form").style.display = "block";
-  document.getElementById("register-form").style.display = "none";
+  document.getElementById("login-block").style.display = "block";
+  document.getElementById("register-block").style.display = "none";
 });
 
 document.getElementById("show-register").addEventListener("click", () => {
@@ -253,8 +251,8 @@ document.getElementById("show-register").addEventListener("click", () => {
   searchSection.style.display = "none";
   accountSection.style.display = "none";
 
-  document.getElementById("register-form").style.display = "block";
-  document.getElementById("login-form").style.display = "none";
+  document.getElementById("register-block").style.display = "block";
+  document.getElementById("login-block").style.display = "none";
 });
 
 // =========================
@@ -392,3 +390,6 @@ document.getElementById("home-button").addEventListener("click", () => {
 
 currentProfileList = [...demoProfiles];
 renderProfiles([...demoProfiles]);
+
+// Show login by default
+document.getElementById("login-block").style.display = "block";
