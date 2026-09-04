@@ -11,7 +11,9 @@ app.use(express.static('public'));
 
 let nextId = 1;
 
-// Register
+/* =========================
+   REGISTER
+   ========================= */
 app.post('/api/register', async (req, res) => {
   const { username, password, age, bio, interests } = req.body;
 
@@ -36,10 +38,15 @@ app.post('/api/register', async (req, res) => {
 
   users.push(user);
 
-  res.json({ message: 'registered', user: { id: user.id, username: user.username } });
+  res.json({
+    message: 'registered',
+    user: { id: user.id, username: user.username }
+  });
 });
 
-// Login (very basic, no JWT/session here)
+/* =========================
+   LOGIN
+   ========================= */
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
 
@@ -49,7 +56,6 @@ app.post('/api/login', async (req, res) => {
   const ok = await bcrypt.compare(password, user.passwordHash);
   if (!ok) return res.status(400).json({ error: 'invalid credentials' });
 
-  // In a real app, return a token or session
   res.json({
     message: 'logged in',
     user: {
@@ -62,7 +68,9 @@ app.post('/api/login', async (req, res) => {
   });
 });
 
-// List profiles (simple “browse”)
+/* =========================
+   LIST ALL PROFILES
+   ========================= */
 app.get('/api/profiles', (req, res) => {
   const publicProfiles = users.map(u => ({
     id: u.id,
@@ -74,24 +82,53 @@ app.get('/api/profiles', (req, res) => {
   res.json(publicProfiles);
 });
 
-// Simple filter by interest
+/* =========================
+   SEARCH PROFILES BY INTEREST
+   ========================= */
 app.get('/api/profiles/search', (req, res) => {
   const { interest } = req.query;
   if (!interest) return res.json([]);
 
-  const matches = users.filter(u =>
-    (u.interests || []).some(i => i.toLowerCase().includes(interest.toLowerCase()))
-  ).map(u => ({
-    id: u.id,
-    username: u.username,
-    age: u.age,
-    bio: u.bio,
-    interests: u.interests
-  }));
+  const matches = users
+    .filter(u =>
+      (u.interests || []).some(i =>
+        i.toLowerCase().includes(interest.toLowerCase())
+      )
+    )
+    .map(u => ({
+      id: u.id,
+      username: u.username,
+      age: u.age,
+      bio: u.bio,
+      interests: u.interests
+    }));
 
   res.json(matches);
 });
 
+/* =========================
+   GET SINGLE PROFILE (My Account)
+   ========================= */
+app.get('/api/profiles/:username', (req, res) => {
+  const { username } = req.params;
+
+  const user = users.find(u => u.username === username);
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
+  res.json({
+    id: user.id,
+    username: user.username,
+    age: user.age,
+    bio: user.bio,
+    interests: user.interests
+  });
+});
+
+/* =========================
+   START SERVER
+   ========================= */
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log('Dating site server running on port', PORT);
