@@ -209,6 +209,8 @@
 </head>
 <body>
   <div class="container">
+
+    <!-- HEADER -->
     <header>
       <div class="brand">
         <div class="logo">MD</div>
@@ -220,12 +222,17 @@
 
       <div style="display:flex;gap:10px;align-items:center">
         <div style="font-size:13px;color:var(--muted)">Welcome, <strong>Guest</strong></div>
-        <button class="secondary" onclick="document.getElementById('reg-username').focus()">Sign up</button>
+
+        <!-- REQUIRED BUTTONS FOR app.js -->
+        <button id="show-login" class="secondary">Login</button>
+        <button id="show-register" class="secondary">Register</button>
       </div>
     </header>
 
-    <section id="auth" class="card" aria-labelledby="auth-heading">
+    <!-- AUTH SECTION -->
+    <section id="auth" class="card" aria-labelledby="auth-heading" style="display:none;">
       <h2 id="auth-heading">Register</h2>
+
       <form id="register-form" autocomplete="off">
         <input type="text" id="reg-username" placeholder="Username" required />
         <input type="password" id="reg-password" placeholder="Password" required />
@@ -247,6 +254,7 @@
       <p id="auth-message" aria-live="polite"></p>
     </section>
 
+    <!-- SEARCH / PROFILES SECTION -->
     <section id="search" class="card" aria-labelledby="browse-heading">
       <h2 id="browse-heading">Browse Profiles</h2>
 
@@ -263,9 +271,10 @@
 
       <ul id="profiles-list" aria-live="polite"></ul>
     </section>
+
   </div>
 
-<script src="app.js"></script>
-
+  <script src="app.js"></script>
 </body>
+
 </html>
