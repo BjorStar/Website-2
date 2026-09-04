@@ -13,6 +13,12 @@ const accountSection = document.getElementById("my-account");
 let likedProfiles = [];
 let currentProfileList = [];
 
+// Load saved likes
+const savedLikes = localStorage.getItem("likedProfiles");
+if (savedLikes) {
+  likedProfiles = JSON.parse(savedLikes);
+}
+
 // =========================
 // DEMO PROFILES
 // =========================
@@ -71,6 +77,9 @@ function toggleLike(username) {
   } else {
     likedProfiles.push(username);
   }
+
+  // Save to localStorage
+  localStorage.setItem("likedProfiles", JSON.stringify(likedProfiles));
 
   renderProfiles(currentProfileList);
 }
