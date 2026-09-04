@@ -3,7 +3,7 @@
 // =========================
 
 // Replace this with your actual Render backend URL:
-const API_BASE = "https://projekt2-backend.onrender.com";
+const API_BASE = "https://website-testing-teqc.onrender.com";
 
 const authMessage = document.getElementById('auth-message');
 const profilesList = document.getElementById('profiles-list');
