@@ -68,14 +68,9 @@ async function loadProfiles(interest) {
     try {
       const parsed = JSON.parse(text);
       if (Array.isArray(parsed)) realProfiles = parsed;
-    } catch {
-      // ignore, fallback to demo only
-    }
-  } catch {
-    // ignore, fallback to demo only
-  }
+    } catch {}
+  } catch {}
 
-  // ALWAYS show demo + real
   const combined = [...demoProfiles, ...realProfiles];
   renderProfiles(combined);
 }
@@ -83,7 +78,7 @@ async function loadProfiles(interest) {
 document.getElementById("load-profiles").addEventListener("click", () => loadProfiles());
 
 // =========================
-// SEARCH (demo + real)
+// SEARCH
 // =========================
 
 document.getElementById("search-button").addEventListener("click", () => {
@@ -229,7 +224,7 @@ document.getElementById("logout-btn").addEventListener("click", () => {
 });
 
 // =========================
-// MY ACCOUNT
+// MY ACCOUNT + EDITING
 // =========================
 
 document.getElementById("my-account-btn").addEventListener("click", async () => {
@@ -240,17 +235,11 @@ document.getElementById("my-account-btn").addEventListener("click", async () => 
     const res = await fetch(`${API_BASE}/api/profiles/${username}`);
     const data = await res.json();
 
+    // Fill fields
     document.getElementById("acc-username").textContent = data.username;
-    document.getElementById("acc-age").textContent = data.age;
-    document.getElementById("acc-bio").textContent = data.bio;
-
-    const list = document.getElementById("acc-interests");
-    list.innerHTML = "";
-    data.interests.forEach(i => {
-      const li = document.createElement("li");
-      li.textContent = i;
-      list.appendChild(li);
-    });
+    document.getElementById("acc-age").value = data.age || "";
+    document.getElementById("acc-bio").value = data.bio || "";
+    document.getElementById("acc-interests").value = (data.interests || []).join(", ");
 
     authSection.style.display = "none";
     searchSection.style.display = "none";
@@ -258,6 +247,36 @@ document.getElementById("my-account-btn").addEventListener("click", async () => 
 
   } catch {
     alert("Could not load your account.");
+  }
+});
+
+// =========================
+// SAVE PROFILE EDITS
+// =========================
+
+document.getElementById("save-profile-btn").addEventListener("click", async () => {
+  const username = localStorage.getItem("loggedInUser");
+  if (!username) return;
+
+  const age = document.getElementById("acc-age").value;
+  const bio = document.getElementById("acc-bio").value.trim();
+  const interestsRaw = document.getElementById("acc-interests").value.trim();
+  const interests = interestsRaw ? interestsRaw.split(",").map(i => i.trim()).filter(Boolean) : [];
+
+  try {
+    const res = await fetch(`${API_BASE}/api/profiles/${username}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ age, bio, interests })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Update failed");
+
+    alert("Profile updated!");
+
+  } catch {
+    alert("Could not save profile.");
   }
 });
 
