@@ -221,11 +221,18 @@
       </div>
 
       <div style="display:flex;gap:10px;align-items:center">
-        <div style="font-size:13px;color:var(--muted)">Welcome, <strong>Guest</strong></div>
 
-        <!-- REQUIRED BUTTONS FOR app.js -->
+        <!-- Username display (starts empty) -->
+        <div id="welcome-box" style="font-size:13px;color:var(--muted);display:none;">
+          Welcome <strong id="user-display"></strong>
+        </div>
+
+        <!-- Buttons shown when NOT logged in -->
         <button id="show-login" class="secondary">Login</button>
         <button id="show-register" class="secondary">Register</button>
+
+        <!-- Logout button (hidden until login) -->
+        <button id="logout-btn" class="secondary" style="display:none;">Logout</button>
       </div>
     </header>
 
@@ -276,5 +283,6 @@
 
   <script src="app.js"></script>
 </body>
+
 
 </html>
