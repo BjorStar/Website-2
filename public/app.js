@@ -11,7 +11,7 @@ const searchSection = document.getElementById("search");
 const accountSection = document.getElementById("my-account");
 
 // =========================
-// DEMO PROFILES (fallback)
+// DEMO PROFILES (always shown)
 // =========================
 
 const demoProfiles = [
@@ -28,11 +28,6 @@ const demoProfiles = [
 
 function renderProfiles(items) {
   profilesList.innerHTML = "";
-
-  if (!items.length) {
-    profilesList.innerHTML = '<li style="color:var(--muted);padding:12px">No profiles found</li>';
-    return;
-  }
 
   items.forEach(p => {
     const li = document.createElement("li");
@@ -54,11 +49,13 @@ function renderProfiles(items) {
 }
 
 // =========================
-// LOAD PROFILES
+// ALWAYS SHOW DEMO + REAL
 // =========================
 
 async function loadProfiles(interest) {
   profilesList.innerHTML = "<li>Loading...</li>";
+
+  let realProfiles = [];
 
   try {
     const url = interest
@@ -67,33 +64,31 @@ async function loadProfiles(interest) {
 
     const res = await fetch(url);
     const text = await res.text();
-    let data;
 
-    try { data = JSON.parse(text); }
-    catch { renderProfiles(demoProfiles); return; }
-
-    if (!Array.isArray(data) || data.length === 0) {
-      renderProfiles(demoProfiles);
-      return;
+    try {
+      const parsed = JSON.parse(text);
+      if (Array.isArray(parsed)) realProfiles = parsed;
+    } catch {
+      // ignore, fallback to demo only
     }
-
-    renderProfiles(data);
-
   } catch {
-    renderProfiles(demoProfiles);
+    // ignore, fallback to demo only
   }
+
+  // ALWAYS show demo + real
+  const combined = [...demoProfiles, ...realProfiles];
+  renderProfiles(combined);
 }
 
 document.getElementById("load-profiles").addEventListener("click", () => loadProfiles());
 
 // =========================
-// SEARCH
+// SEARCH (demo + real)
 // =========================
 
 document.getElementById("search-button").addEventListener("click", () => {
   const interest = document.getElementById("search-interest").value.trim().toLowerCase();
-  if (!interest) loadProfiles();
-  else loadProfiles(interest);
+  loadProfiles(interest || null);
 });
 
 // =========================
@@ -121,29 +116,11 @@ function applyLoggedOutUI() {
 }
 
 // =========================
-// RESTORE LOGIN ON REFRESH (with backend validation)
+// RESTORE LOGIN
 // =========================
 
 const savedUser = localStorage.getItem("loggedInUser");
-
-if (savedUser) {
-  try {
-    const res = await fetch(`${API_BASE}/api/profiles/${savedUser}`);
-
-    if (res.ok) {
-      // User exists in backend → keep logged in
-      applyLoggedInUI(savedUser);
-    } else {
-      // User does NOT exist → clear fake login
-      localStorage.removeItem("loggedInUser");
-      applyLoggedOutUI();
-    }
-  } catch {
-    // Backend unreachable → assume logout
-    localStorage.removeItem("loggedInUser");
-    applyLoggedOutUI();
-  }
-}
+if (savedUser) applyLoggedInUI(savedUser);
 
 // =========================
 // REGISTER
@@ -167,12 +144,7 @@ document.getElementById("register-form").addEventListener("submit", async e => {
       body: JSON.stringify({ username, password, age, bio, interests })
     });
 
-    const text = await res.text();
-    let data;
-
-    try { data = JSON.parse(text); }
-    catch { throw new Error("Invalid server response."); }
-
+    const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Registration failed");
 
     authMessage.textContent = `Registered as ${data.user.username}`;
@@ -204,12 +176,7 @@ document.getElementById("login-form").addEventListener("submit", async e => {
       body: JSON.stringify({ username, password })
     });
 
-    const text = await res.text();
-    let data;
-
-    try { data = JSON.parse(text); }
-    catch { throw new Error("Invalid server response."); }
-
+    const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Login failed");
 
     authMessage.textContent = `Welcome back, ${data.user.username}`;
@@ -262,7 +229,7 @@ document.getElementById("logout-btn").addEventListener("click", () => {
 });
 
 // =========================
-// MY ACCOUNT PAGE
+// MY ACCOUNT
 // =========================
 
 document.getElementById("my-account-btn").addEventListener("click", async () => {
@@ -303,7 +270,7 @@ document.getElementById("home-button").addEventListener("click", () => {
 });
 
 // =========================
-// INITIAL DEMO RENDER
+// INITIAL RENDER
 // =========================
 
-renderProfiles(demoProfiles);
+renderProfiles([...demoProfiles]);
