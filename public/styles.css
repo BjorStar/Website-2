@@ -167,6 +167,12 @@ textarea {
   flex: 1;
 }
 
+.profile h4 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .tags {
   margin-top: 6px;
 }
@@ -265,3 +271,4 @@ textarea {
   border: none;
   cursor: pointer;
 }
+
