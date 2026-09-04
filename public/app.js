@@ -169,9 +169,7 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
     authMessage.textContent = `Registered as ${data.user.username}`;
     authMessage.style.color = "var(--accent-2)";
 
-    // Save login state
     localStorage.setItem("loggedInUser", data.user.username);
-
     applyLoggedInUI(data.user.username);
 
   } catch (err) {
@@ -211,9 +209,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     authMessage.textContent = `Welcome back, ${data.user.username}`;
     authMessage.style.color = "var(--accent-2)";
 
-    // Save login state
     localStorage.setItem("loggedInUser", data.user.username);
-
     applyLoggedInUI(data.user.username);
 
   } catch (err) {
@@ -257,8 +253,19 @@ document.getElementById("logout-btn").addEventListener("click", () => {
 });
 
 // =========================
+// MD LOGO → HOME BUTTON
+// =========================
+
+document.getElementById("home-button").addEventListener("click", () => {
+  authSection.style.display = "none";
+  searchSection.style.display = "block";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+// =========================
 // INITIAL DEMO RENDER
 // =========================
 
 renderProfiles(demoProfiles);
+
 
