@@ -127,6 +127,37 @@ app.get('/api/profiles/:username', (req, res) => {
 });
 
 /* =========================
+   UPDATE PROFILE (Editing)
+   ========================= */
+app.put('/api/profiles/:username', (req, res) => {
+  const { username } = req.params;
+  const { age, bio, interests } = req.body;
+
+  const user = users.find(u => u.username === username);
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
+  // Update fields
+  if (age !== undefined) user.age = age;
+  if (bio !== undefined) user.bio = bio;
+  if (interests !== undefined && Array.isArray(interests)) {
+    user.interests = interests;
+  }
+
+  res.json({
+    message: 'profile updated',
+    user: {
+      id: user.id,
+      username: user.username,
+      age: user.age,
+      bio: user.bio,
+      interests: user.interests
+    }
+  });
+});
+
+/* =========================
    START SERVER
    ========================= */
 const PORT = process.env.PORT || 3000;
