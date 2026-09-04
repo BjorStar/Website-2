@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
   <!-- Main stylesheet -->
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -40,58 +40,64 @@
 
     <!-- AUTH SECTION -->
     <section id="auth" class="card" style="display:none;">
-      <h2>Register</h2>
 
-      <form id="register-form" autocomplete="off">
-        <div class="field">
-          <label for="reg-username">Username</label>
-          <input type="text" id="reg-username" required />
-        </div>
+      <!-- REGISTER BLOCK -->
+      <div id="register-block" style="display:none;">
+        <h2>Register</h2>
 
-        <div class="field">
-          <label for="reg-password">Password</label>
-          <input type="password" id="reg-password" required />
-        </div>
+        <form id="register-form" autocomplete="off">
+          <div class="field">
+            <label for="reg-username">Username</label>
+            <input type="text" id="reg-username" required />
+          </div>
 
-        <div class="field">
-          <label for="reg-age">Age</label>
-          <input type="number" id="reg-age" min="18" />
-        </div>
+          <div class="field">
+            <label for="reg-password">Password</label>
+            <input type="password" id="reg-password" required />
+          </div>
 
-        <div class="field">
-          <label for="reg-bio">Bio</label>
-          <input type="text" id="reg-bio" />
-        </div>
+          <div class="field">
+            <label for="reg-age">Age</label>
+            <input type="number" id="reg-age" min="18" />
+          </div>
 
-        <div class="field">
-          <label for="reg-interests">Interests (comma separated)</label>
-          <input type="text" id="reg-interests" />
-        </div>
+          <div class="field">
+            <label for="reg-bio">Bio</label>
+            <input type="text" id="reg-bio" />
+          </div>
 
-        <button type="submit">Create account</button>
-      </form>
+          <div class="field">
+            <label for="reg-interests">Interests (comma separated)</label>
+            <input type="text" id="reg-interests" />
+          </div>
 
-      <hr />
+          <button type="submit">Create account</button>
+        </form>
+      </div>
 
-      <h2>Login</h2>
-      <form id="login-form" autocomplete="off">
-        <div class="field">
-          <label for="login-username">Username</label>
-          <input type="text" id="login-username" required />
-        </div>
+      <!-- LOGIN BLOCK -->
+      <div id="login-block" style="display:none;">
+        <h2>Login</h2>
 
-        <div class="field">
-          <label for="login-password">Password</label>
-          <input type="password" id="login-password" required />
-        </div>
+        <form id="login-form" autocomplete="off">
+          <div class="field">
+            <label for="login-username">Username</label>
+            <input type="text" id="login-username" required />
+          </div>
 
-        <button type="submit">Login</button>
-      </form>
+          <div class="field">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" required />
+          </div>
+
+          <button type="submit">Login</button>
+        </form>
+      </div>
 
       <p id="auth-message"></p>
     </section>
 
-    <!-- MY ACCOUNT (EDITING) -->
+    <!-- MY ACCOUNT -->
     <section id="my-account" class="card" style="display:none;">
       <h2>My Account</h2>
 
