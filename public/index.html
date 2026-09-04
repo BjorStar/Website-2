@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -8,13 +8,10 @@
   <!-- Google font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-  <!-- Your actual CSS -->
-  <link rel="stylesheet" href="styles.css">
+  <!-- Main stylesheet -->
+  <link rel="stylesheet" href="style.css">
 </head>
 
-
-
-  
 <body>
   <div class="container">
 
@@ -33,6 +30,7 @@
           Welcome <strong id="user-display"></strong>
         </div>
 
+        <button id="liked-profiles-btn" class="secondary">Liked Profiles</button>
         <button id="my-account-btn" class="secondary" style="display:none;">My Account</button>
         <button id="show-login" class="secondary">Login</button>
         <button id="show-register" class="secondary">Register</button>
@@ -141,34 +139,22 @@
 
   </div>
 
+  <!-- CHAT POPUP -->
+  <div id="chat-popup">
+    <div id="chat-header">
+      <span id="chat-title">Chat</span>
+      <button id="chat-close">×</button>
+    </div>
 
-<!-- CHAT POPUP -->
-<div id="chat-popup">
-  <div id="chat-header">
-    <span id="chat-title">Chat</span>
-    <button id="chat-close">×</button>
+    <div id="chat-messages"></div>
+
+    <div id="chat-input-area">
+      <input id="chat-input" type="text" placeholder="Type a message..." />
+      <button id="chat-send">Send</button>
+    </div>
   </div>
-
-  <div id="chat-messages"></div>
-
-  <div id="chat-input-area">
-    <input id="chat-input" type="text" placeholder="Type a message..." />
-    <button id="chat-send">Send</button>
-  </div>
-</div>
-
-
-
-  
 
   <script src="app.js"></script>
-
-
-
-
-  
 </body>
-
-  
-
 </html>
+
