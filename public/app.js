@@ -2,14 +2,114 @@
 // CONFIG
 // =========================
 
-// Replace this with your actual Render backend URL:
+// IMPORTANT: Replace with YOUR Render backend URL
 const API_BASE = "https://website-testing-teqc.onrender.com";
 
 const authMessage = document.getElementById('auth-message');
 const profilesList = document.getElementById('profiles-list');
 
 // =========================
-// REGISTER
+// DEMO PROFILES (fallback)
+// =========================
+
+const demoProfiles = [
+  {username:'Aino', age:27, bio:'Coffee lover and weekend hiker', interests:['hiking','coffee','photography']},
+  {username:'Mikko', age:31, bio:'Tech nerd who cooks', interests:['cooking','tech','gaming']},
+  {username:'Sara', age:24, bio:'Yoga instructor and plant parent', interests:['yoga','plants','travel']},
+  {username:'Jon', age:29, bio:'Board games and craft beer', interests:['board games','beer','hiking']},
+  {username:'Liisa', age:26, bio:'Designer who loves cats', interests:['design','cats','art']},
+];
+
+// =========================
+// RENDER PROFILES
+// =========================
+
+function renderProfiles(items){
+  profilesList.innerHTML = '';
+  if(!items.length){
+    profilesList.innerHTML = '<li style="color:var(--muted);padding:12px">No profiles found</li>';
+    return;
+  }
+  items.forEach(p=>{
+    const li = document.createElement('li');
+    li.className = 'profile';
+    li.innerHTML = `
+      <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
+      <div class="meta">
+        <h4>${p.username}, <span style="font-weight:600;color:var(--muted)">${p.age}</span></h4>
+        <p>${p.bio}</p>
+        <div class="tags">${p.interests.map(i=>`<span class="tag">${i}</span>`).join('')}</div>
+      </div>
+      <div class="profile-actions">
+        <button class="btn-ghost">Like</button>
+        <button class="btn-ghost">Message</button>
+      </div>
+    `;
+    profilesList.appendChild(li);
+  });
+}
+
+// =========================
+// LOAD PROFILES (backend + fallback)
+// =========================
+
+async function loadProfiles(interest) {
+  profilesList.innerHTML = "<li>Loading...</li>";
+
+  try {
+    const url = interest
+      ? `${API_BASE}/api/profiles/search?interest=${encodeURIComponent(interest)}`
+      : `${API_BASE}/api/profiles`;
+
+    const res = await fetch(url);
+    const text = await res.text();
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      // Backend unreachable → fallback demo
+      renderProfiles(demoProfiles);
+      return;
+    }
+
+    // If backend has no users → fallback demo
+    if (!Array.isArray(data) || data.length === 0) {
+      renderProfiles(demoProfiles);
+      return;
+    }
+
+    // Backend has users → show them
+    renderProfiles(data);
+
+  } catch (err) {
+    // On any error → fallback demo
+    renderProfiles(demoProfiles);
+  }
+}
+
+document.getElementById('load-profiles').addEventListener('click', () => {
+  loadProfiles();
+});
+
+// =========================
+// SEARCH (backend + fallback)
+// =========================
+
+document.getElementById('search-button').addEventListener('click', () => {
+  const interest = document.getElementById('search-interest').value.trim().toLowerCase();
+
+  if (!interest) {
+    loadProfiles();
+    return;
+  }
+
+  // Try backend search first
+  loadProfiles(interest);
+});
+
+// =========================
+// REGISTER (real backend)
 // =========================
 
 document.getElementById('register-form').addEventListener('submit', async (e) => {
@@ -52,7 +152,7 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
 });
 
 // =========================
-// LOGIN
+// LOGIN (real backend)
 // =========================
 
 document.getElementById('login-form').addEventListener('submit', async (e) => {
@@ -85,80 +185,6 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     authMessage.textContent = err.message;
     authMessage.style.color = "var(--accent)";
   }
-});
-
-// =========================
-// LOAD PROFILES
-// =========================
-
-async function loadProfiles(interest) {
-  profilesList.innerHTML = "<li>Loading...</li>";
-
-  try {
-    const url = interest
-      ? `${API_BASE}/api/profiles/search?interest=${encodeURIComponent(interest)}`
-      : `${API_BASE}/api/profiles`;
-
-    const res = await fetch(url);
-    const text = await res.text();
-    let data;
-
-    try {
-      data = JSON.parse(text);
-    } catch {
-      throw new Error("Server returned invalid JSON (HTML instead). Check API_BASE.");
-    }
-
-    if (!Array.isArray(data)) {
-      profilesList.innerHTML = "<li>Error: Invalid response format</li>";
-      return;
-    }
-
-    if (data.length === 0) {
-      profilesList.innerHTML = "<li>No profiles found</li>";
-      return;
-    }
-
-    profilesList.innerHTML = "";
-
-    data.forEach(p => {
-      const li = document.createElement('li');
-      li.className = "profile";
-      li.innerHTML = `
-        <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
-        <div class="meta">
-          <h4>${p.username}, <span style="color:var(--muted)">${p.age || ''}</span></h4>
-          <p>${p.bio || 'No bio'}</p>
-          <div class="tags">${(p.interests || []).map(i => `<span class="tag">${i}</span>`).join('')}</div>
-        </div>
-        <div class="profile-actions">
-          <button class="btn-ghost">Like</button>
-          <button class="btn-ghost">Message</button>
-        </div>
-      `;
-      profilesList.appendChild(li);
-    });
-
-  } catch (err) {
-    profilesList.innerHTML = `<li>Error: ${err.message}</li>`;
-  }
-}
-
-document.getElementById('load-profiles').addEventListener('click', () => {
-  loadProfiles();
-});
-
-// =========================
-// SEARCH
-// =========================
-
-document.getElementById('search-button').addEventListener('click', () => {
-  const interest = document.getElementById('search-interest').value.trim();
-  if (!interest) {
-    profilesList.innerHTML = "<li>Please enter an interest.</li>";
-    return;
-  }
-  loadProfiles(interest);
 });
 
 // =========================
@@ -200,3 +226,9 @@ showRegisterBtn.addEventListener("click", () => {
 
   document.getElementById("reg-username").focus();
 });
+
+// =========================
+// INITIAL DEMO RENDER
+// =========================
+
+renderProfiles(demoProfiles);
