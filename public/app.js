@@ -7,17 +7,19 @@ const API_BASE = "https://website-testing-teqc.onrender.com";
 
 const authMessage = document.getElementById('auth-message');
 const profilesList = document.getElementById('profiles-list');
+const authSection = document.getElementById('auth');
+const searchSection = document.getElementById('search');
 
 // =========================
 // DEMO PROFILES (fallback)
 // =========================
 
 const demoProfiles = [
-  {username:'Aino', age:27, bio:'Coffee lover and weekend hiker', interests:['hiking','coffee','photography']},
-  {username:'Mikko', age:31, bio:'Tech nerd who cooks', interests:['cooking','tech','gaming']},
-  {username:'Sara', age:24, bio:'Yoga instructor and plant parent', interests:['yoga','plants','travel']},
-  {username:'Jon', age:29, bio:'Board games and craft beer', interests:['board games','beer','hiking']},
-  {username:'Liisa', age:26, bio:'Designer who loves cats', interests:['design','cats','art']},
+  {username:'(DEMO) Aino', age:27, bio:'Coffee lover and weekend hiker', interests:['hiking','coffee','photography']},
+  {username:'(DEMO) Mikko', age:31, bio:'Tech nerd who cooks', interests:['cooking','tech','gaming']},
+  {username:'(DEMO) Sara', age:24, bio:'Yoga instructor and plant parent', interests:['yoga','plants','travel']},
+  {username:'(DEMO) Jon', age:29, bio:'Board games and craft beer', interests:['board games','beer','hiking']},
+  {username:'(DEMO) Liisa', age:26, bio:'Designer who loves cats', interests:['design','cats','art']},
 ];
 
 // =========================
@@ -68,22 +70,18 @@ async function loadProfiles(interest) {
     try {
       data = JSON.parse(text);
     } catch {
-      // Backend unreachable → fallback demo
       renderProfiles(demoProfiles);
       return;
     }
 
-    // If backend has no users → fallback demo
     if (!Array.isArray(data) || data.length === 0) {
       renderProfiles(demoProfiles);
       return;
     }
 
-    // Backend has users → show them
     renderProfiles(data);
 
   } catch (err) {
-    // On any error → fallback demo
     renderProfiles(demoProfiles);
   }
 }
@@ -93,23 +91,20 @@ document.getElementById('load-profiles').addEventListener('click', () => {
 });
 
 // =========================
-// SEARCH (backend + fallback)
+// SEARCH
 // =========================
 
 document.getElementById('search-button').addEventListener('click', () => {
   const interest = document.getElementById('search-interest').value.trim().toLowerCase();
-
   if (!interest) {
     loadProfiles();
     return;
   }
-
-  // Try backend search first
   loadProfiles(interest);
 });
 
 // =========================
-// REGISTER (real backend)
+// REGISTER
 // =========================
 
 document.getElementById('register-form').addEventListener('submit', async (e) => {
@@ -138,13 +133,21 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
     try {
       data = JSON.parse(text);
     } catch {
-      throw new Error("Server returned invalid JSON (HTML instead). Check API_BASE.");
+      throw new Error("Server returned invalid JSON.");
     }
 
     if (!res.ok) throw new Error(data.error || "Registration failed");
 
     authMessage.textContent = `Registered as ${data.user.username}`;
     authMessage.style.color = "var(--accent-2)";
+
+    // Update header UI
+    document.getElementById("user-display").textContent = data.user.username;
+    document.getElementById("welcome-box").style.display = "block";
+    document.getElementById("logout-btn").style.display = "inline-block";
+    document.getElementById("show-login").style.display = "none";
+    document.getElementById("show-register").style.display = "none";
+
   } catch (err) {
     authMessage.textContent = err.message;
     authMessage.style.color = "var(--accent)";
@@ -152,7 +155,7 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
 });
 
 // =========================
-// LOGIN (real backend)
+// LOGIN
 // =========================
 
 document.getElementById('login-form').addEventListener('submit', async (e) => {
@@ -174,13 +177,21 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     try {
       data = JSON.parse(text);
     } catch {
-      throw new Error("Server returned invalid JSON (HTML instead). Check API_BASE.");
+      throw new Error("Server returned invalid JSON.");
     }
 
     if (!res.ok) throw new Error(data.error || "Login failed");
 
     authMessage.textContent = `Welcome back, ${data.user.username}`;
     authMessage.style.color = "var(--accent-2)";
+
+    // Update header UI
+    document.getElementById("user-display").textContent = data.user.username;
+    document.getElementById("welcome-box").style.display = "block";
+    document.getElementById("logout-btn").style.display = "inline-block";
+    document.getElementById("show-login").style.display = "none";
+    document.getElementById("show-register").style.display = "none";
+
   } catch (err) {
     authMessage.textContent = err.message;
     authMessage.style.color = "var(--accent)";
@@ -188,43 +199,41 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 });
 
 // =========================
-// LOGIN / REGISTER UI LOGIC
+// LOGIN / REGISTER UI SWITCHING
 // =========================
 
-const authSection = document.getElementById('auth');
-const searchSection = document.getElementById('search');
-
-const showLoginBtn = document.getElementById('show-login');
-const showRegisterBtn = document.getElementById('show-register');
-
-const registerForm = document.getElementById('register-form');
-const loginForm = document.getElementById('login-form');
-
-// Hide everything at start
-authSection.style.display = "none";
-registerForm.style.display = "none";
-loginForm.style.display = "none";
-
-// Show login
-showLoginBtn.addEventListener("click", () => {
+document.getElementById("show-login").addEventListener("click", () => {
   authSection.style.display = "block";
   searchSection.style.display = "none";
 
-  loginForm.style.display = "block";
-  registerForm.style.display = "none";
-
-  document.getElementById("login-username").focus();
+  document.getElementById("login-form").style.display = "block";
+  document.getElementById("register-form").style.display = "none";
 });
 
-// Show register
-showRegisterBtn.addEventListener("click", () => {
+document.getElementById("show-register").addEventListener("click", () => {
   authSection.style.display = "block";
   searchSection.style.display = "none";
 
-  registerForm.style.display = "block";
-  loginForm.style.display = "none";
+  document.getElementById("register-form").style.display = "block";
+  document.getElementById("login-form").style.display = "none";
+});
 
-  document.getElementById("reg-username").focus();
+// =========================
+// LOGOUT
+// =========================
+
+document.getElementById("logout-btn").addEventListener("click", () => {
+  document.getElementById("welcome-box").style.display = "none";
+  document.getElementById("user-display").textContent = "";
+
+  document.getElementById("logout-btn").style.display = "none";
+  document.getElementById("show-login").style.display = "inline-block";
+  document.getElementById("show-register").style.display = "inline-block";
+
+  authMessage.textContent = "";
+
+  authSection.style.display = "none";
+  searchSection.style.display = "block";
 });
 
 // =========================
