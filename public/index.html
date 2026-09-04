@@ -218,7 +218,7 @@
     <header>
       <div class="brand">
 
-        <!-- MD logo turned into a button -->
+        <!-- MD logo button -->
         <button id="home-button" class="logo-btn">MD</button>
 
         <div>
@@ -229,23 +229,26 @@
 
       <div style="display:flex;gap:10px;align-items:center">
 
-        <!-- Username display (hidden until login) -->
+        <!-- Username display -->
         <div id="welcome-box" style="font-size:13px;color:var(--muted);display:none;">
           Welcome <strong id="user-display"></strong>
         </div>
 
-        <!-- Buttons shown when NOT logged in -->
+        <!-- My Account button -->
+        <button id="my-account-btn" class="secondary" style="display:none;">My Account</button>
+
+        <!-- Login/Register -->
         <button id="show-login" class="secondary">Login</button>
         <button id="show-register" class="secondary">Register</button>
 
-        <!-- Logout button (hidden until login) -->
+        <!-- Logout -->
         <button id="logout-btn" class="secondary" style="display:none;">Logout</button>
       </div>
     </header>
 
     <!-- AUTH SECTION -->
-    <section id="auth" class="card" aria-labelledby="auth-heading" style="display:none;">
-      <h2 id="auth-heading">Register</h2>
+    <section id="auth" class="card" style="display:none;">
+      <h2>Register</h2>
 
       <form id="register-form" autocomplete="off">
         <input type="text" id="reg-username" placeholder="Username" required />
@@ -256,7 +259,7 @@
         <button type="submit">Create account</button>
       </form>
 
-      <hr style="border:none;height:1px;background:rgba(255,255,255,0.02);margin:14px 0;border-radius:2px" />
+      <hr />
 
       <h2>Login</h2>
       <form id="login-form" autocomplete="off">
@@ -265,25 +268,38 @@
         <button type="submit">Login</button>
       </form>
 
-      <p id="auth-message" aria-live="polite"></p>
+      <p id="auth-message"></p>
     </section>
 
-    <!-- SEARCH / PROFILES SECTION -->
-    <section id="search" class="card" aria-labelledby="browse-heading">
-      <h2 id="browse-heading">Browse Profiles</h2>
+    <!-- MY ACCOUNT -->
+    <section id="my-account" class="card" style="display:none;">
+      <h2>My Account</h2>
+
+      <p><strong>Username:</strong> <span id="acc-username"></span></p>
+      <p><strong>Age:</strong> <span id="acc-age"></span></p>
+      <p><strong>Bio:</strong> <span id="acc-bio"></span></p>
+
+      <p><strong>Interests:</strong></p>
+      <ul id="acc-interests"></ul>
+    </section>
+
+    <!-- SEARCH / PROFILES -->
+    <section id="search" class="card">
+      <h2>Browse Profiles</h2>
 
       <div class="controls">
         <button id="load-profiles" class="btn-ghost">Load all profiles</button>
         <div style="flex:1"></div>
       </div>
 
-      <h3 style="margin:8px 0 6px 0;font-size:14px;color:var(--muted)">Search by interest</h3>
-      <div class="controls" style="margin-bottom:18px">
+      <h3 style="margin:8px 0 6px 0;color:var(--muted);">Search by interest</h3>
+
+      <div class="controls" style="margin-bottom:18px;">
         <input type="text" id="search-interest" placeholder="e.g. hiking" />
         <button id="search-button">Search</button>
       </div>
 
-      <ul id="profiles-list" aria-live="polite"></ul>
+      <ul id="profiles-list"></ul>
     </section>
 
   </div>
