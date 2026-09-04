@@ -10,6 +10,9 @@ const authSection = document.getElementById("auth");
 const searchSection = document.getElementById("search");
 const accountSection = document.getElementById("my-account");
 
+let likedProfiles = [];
+let currentProfileList = [];
+
 // =========================
 // DEMO PROFILES
 // =========================
@@ -36,20 +39,40 @@ function renderProfiles(items) {
     li.innerHTML = `
       <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
       <div class="meta">
-        <h4>${p.username}, <span style="color:var(--muted);">${p.age}</span></h4>
+        <h4>
+          ${p.username}
+          ${likedProfiles.includes(p.username) ? "❤️" : ""}
+          <span style="color:var(--muted);">, ${p.age}</span>
+        </h4>
         <p>${p.bio}</p>
         <div class="tags">
           ${p.interests.map(i => `<span class="tag">${i}</span>`).join("")}
         </div>
       </div>
       <div class="profile-actions">
-        <button class="btn-ghost">Like</button>
+        <button class="btn-ghost" onclick="toggleLike('${p.username}')">
+          ${likedProfiles.includes(p.username) ? "Unlike" : "Like"}
+        </button>
         <button class="btn-ghost" onclick="openChat('${p.username}')">Message</button>
       </div>
     `;
 
     profilesList.appendChild(li);
   });
+}
+
+// =========================
+// LIKE / UNLIKE TOGGLE
+// =========================
+
+function toggleLike(username) {
+  if (likedProfiles.includes(username)) {
+    likedProfiles = likedProfiles.filter(u => u !== username);
+  } else {
+    likedProfiles.push(username);
+  }
+
+  renderProfiles(currentProfileList);
 }
 
 // =========================
@@ -61,7 +84,6 @@ async function loadProfiles(interest) {
 
   const normalizedInterest = interest ? interest.toLowerCase() : null;
 
-  // Filter demo profiles
   let filteredDemo = demoProfiles;
 
   if (normalizedInterest) {
@@ -70,7 +92,6 @@ async function loadProfiles(interest) {
     );
   }
 
-  // Fetch real profiles
   let realProfiles = [];
 
   try {
@@ -88,6 +109,7 @@ async function loadProfiles(interest) {
   } catch {}
 
   const combined = [...filteredDemo, ...realProfiles];
+  currentProfileList = combined;
   renderProfiles(combined);
 }
 
@@ -329,7 +351,6 @@ chatSend.addEventListener("click", () => {
   addChatMessage("You", msg);
   chatInput.value = "";
 
-  // Fake reply
   setTimeout(() => {
     addChatMessage("Them", "Got your message!");
   }, 500);
@@ -337,6 +358,15 @@ chatSend.addEventListener("click", () => {
 
 chatClose.addEventListener("click", () => {
   chatPopup.style.display = "none";
+});
+
+// =========================
+// LIKED PROFILES BUTTON
+// =========================
+
+document.getElementById("liked-profiles-btn").addEventListener("click", () => {
+  const filtered = currentProfileList.filter(p => likedProfiles.includes(p.username));
+  renderProfiles(filtered);
 });
 
 // =========================
@@ -351,4 +381,5 @@ document.getElementById("home-button").addEventListener("click", () => {
 // INITIAL RENDER
 // =========================
 
+currentProfileList = [...demoProfiles];
 renderProfiles([...demoProfiles]);
