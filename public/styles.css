@@ -1,45 +1,224 @@
+/* =========================
+   GLOBAL THEME
+   ========================= */
+
+:root {
+  --bg: #f7f7f9;
+  --card-bg: #ffffff;
+  --border: #e2e2e7;
+  --text: #333;
+  --muted: #777;
+  --accent: #4a6cf7;
+  --accent-2: #3554d1;
+  --radius: 8px;
+  --shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
 body {
-  font-family: sans-serif;
-  max-width: 800px;
-  margin: 20px auto;
-  padding: 0 10px;
+  font-family: "Inter", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 0 20px;
 }
 
-h1 {
-  text-align: center;
+/* =========================
+   HEADER
+   ========================= */
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
 }
 
-section {
-  border: 1px solid #ddd;
-  padding: 15px;
-  margin-bottom: 20px;
-  border-radius: 6px;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
+
+.brand h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.brand .lead {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* =========================
+   MD LOGO BUTTON
+   ========================= */
+
+.logo-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  font-size: 20px;
+  font-weight: 700;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: var(--shadow);
+}
+
+.logo-btn:hover {
+  background: var(--accent-2);
+  transform: scale(1.05);
+}
+
+/* =========================
+   SECTIONS / CARDS
+   ========================= */
+
+section.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  padding: 20px;
+  margin-bottom: 25px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+section.card h2 {
+  margin-top: 0;
+}
+
+/* =========================
+   FORMS
+   ========================= */
 
 form {
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 input {
   display: block;
-  margin: 5px 0;
-  padding: 6px;
+  margin: 8px 0;
+  padding: 10px;
   width: 100%;
   box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  transition: 0.15s;
 }
 
-button {
-  padding: 6px 12px;
-  margin-top: 5px;
-  cursor: pointer;
+input:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(74,108,247,0.2);
 }
+
+/* =========================
+   BUTTONS
+   ========================= */
+
+button {
+  padding: 10px 16px;
+  cursor: pointer;
+  border-radius: var(--radius);
+  border: none;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.secondary {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.btn-ghost:hover {
+  background: var(--border);
+}
+
+/* =========================
+   PROFILE LIST
+   ========================= */
 
 #profiles-list {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
-.profile-card {
-  border-bottom: 1px solid #eee;
-  padding: 8px 0;
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.avatar {
+  width: 45px;
+  height: 45px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.meta h4 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.meta p {
+  margin: 4px 0;
+  color: var(--muted);
+}
+
+.tags {
+  margin-top: 6px;
+}
+
+.tag {
+  display: inline-block;
+  background: var(--accent);
+  color: white;
+  padding: 3px 8px;
+  margin-right: 5px;
+  border-radius: var(--radius);
+  font-size: 12px;
+}
+
+/* =========================
+   CONTROLS
+   ========================= */
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* =========================
+   AUTH MESSAGE
+   ========================= */
+
+#auth-message {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 600;
 }
