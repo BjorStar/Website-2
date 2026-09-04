@@ -10,9 +10,6 @@ const authSection = document.getElementById("auth");
 const searchSection = document.getElementById("search");
 const accountSection = document.getElementById("my-account");
 
-let likedProfiles = [];
-let currentProfileList = [];
-
 // =========================
 // DEMO PROFILES
 // =========================
@@ -39,36 +36,20 @@ function renderProfiles(items) {
     li.innerHTML = `
       <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
       <div class="meta">
-        <h4>
-          ${p.username}
-          ${likedProfiles.includes(p.username) ? "❤️" : ""}
-          <span style="color:var(--muted);">, ${p.age}</span>
-        </h4>
+        <h4>${p.username}, <span style="color:var(--muted);">${p.age}</span></h4>
         <p>${p.bio}</p>
         <div class="tags">
           ${p.interests.map(i => `<span class="tag">${i}</span>`).join("")}
         </div>
       </div>
       <div class="profile-actions">
-        <button class="btn-ghost" onclick="toggleLike('${p.username}')">
-          ${likedProfiles.includes(p.username) ? "Unlike" : "Like"}
-        </button>
+        <button class="btn-ghost">Like</button>
         <button class="btn-ghost" onclick="openChat('${p.username}')">Message</button>
       </div>
     `;
 
     profilesList.appendChild(li);
   });
-}
-
-function toggleLike(username) {
-  if (likedProfiles.includes(username)) {
-    likedProfiles = likedProfiles.filter(u => u !== username);
-  } else {
-    likedProfiles.push(username);
-  }
-
-  renderProfiles(currentProfileList);
 }
 
 // =========================
@@ -80,6 +61,7 @@ async function loadProfiles(interest) {
 
   const normalizedInterest = interest ? interest.toLowerCase() : null;
 
+  // Filter demo profiles
   let filteredDemo = demoProfiles;
 
   if (normalizedInterest) {
@@ -88,6 +70,7 @@ async function loadProfiles(interest) {
     );
   }
 
+  // Fetch real profiles
   let realProfiles = [];
 
   try {
@@ -105,7 +88,6 @@ async function loadProfiles(interest) {
   } catch {}
 
   const combined = [...filteredDemo, ...realProfiles];
-  currentProfileList = combined;
   renderProfiles(combined);
 }
 
@@ -172,4 +154,201 @@ document.getElementById("register-form").addEventListener("submit", async e => {
     const res = await fetch(`${API_BASE}/api/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password, age, bio, interests })
+    });
 
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Registration failed");
+
+    authMessage.textContent = `Registered as ${data.user.username}`;
+    authMessage.style.color = "var(--accent-2)";
+
+    localStorage.setItem("loggedInUser", data.user.username);
+    applyLoggedInUI(data.user.username);
+
+  } catch (err) {
+    authMessage.textContent = err.message;
+    authMessage.style.color = "var(--accent)";
+  }
+});
+
+// =========================
+// LOGIN
+// =========================
+
+document.getElementById("login-form").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const username = document.getElementById("login-username").value.trim();
+  const password = document.getElementById("login-password").value;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Login failed");
+
+    authMessage.textContent = `Welcome back, ${data.user.username}`;
+    authMessage.style.color = "var(--accent-2)";
+
+    localStorage.setItem("loggedInUser", data.user.username);
+    applyLoggedInUI(data.user.username);
+
+  } catch (err) {
+    authMessage.textContent = err.message;
+    authMessage.style.color = "var(--accent)";
+  }
+});
+
+// =========================
+// UI SWITCHING
+// =========================
+
+document.getElementById("show-login").addEventListener("click", () => {
+  authSection.style.display = "block";
+  searchSection.style.display = "none";
+  accountSection.style.display = "none";
+
+  document.getElementById("login-form").style.display = "block";
+  document.getElementById("register-form").style.display = "none";
+});
+
+document.getElementById("show-register").addEventListener("click", () => {
+  authSection.style.display = "block";
+  searchSection.style.display = "none";
+  accountSection.style.display = "none";
+
+  document.getElementById("register-form").style.display = "block";
+  document.getElementById("login-form").style.display = "none";
+});
+
+// =========================
+// LOGOUT
+// =========================
+
+document.getElementById("logout-btn").addEventListener("click", () => {
+  localStorage.removeItem("loggedInUser");
+  applyLoggedOutUI();
+
+  authMessage.textContent = "";
+
+  authSection.style.display = "none";
+  accountSection.style.display = "none";
+  searchSection.style.display = "block";
+});
+
+// =========================
+// MY ACCOUNT + EDITING
+// =========================
+
+document.getElementById("my-account-btn").addEventListener("click", async () => {
+  const username = localStorage.getItem("loggedInUser");
+  if (!username) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/profiles/${username}`);
+    const data = await res.json();
+
+    document.getElementById("acc-username").value = data.username;
+    document.getElementById("acc-age").value = data.age || "";
+    document.getElementById("acc-bio").value = data.bio || "";
+    document.getElementById("acc-interests").value = (data.interests || []).join(", ");
+
+    authSection.style.display = "none";
+    searchSection.style.display = "none";
+    accountSection.style.display = "block";
+
+  } catch {
+    alert("Could not load your account.");
+  }
+});
+
+// =========================
+// SAVE PROFILE EDITS
+// =========================
+
+document.getElementById("save-profile-btn").addEventListener("click", async () => {
+  const username = localStorage.getItem("loggedInUser");
+  if (!username) return;
+
+  const age = document.getElementById("acc-age").value;
+  const bio = document.getElementById("acc-bio").value.trim();
+  const interestsRaw = document.getElementById("acc-interests").value.trim();
+
+  const interests = interestsRaw
+    ? interestsRaw.split(",").map(i => i.trim().toLowerCase()).filter(Boolean)
+    : [];
+
+  try {
+    const res = await fetch(`${API_BASE}/api/profiles/${username}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ age, bio, interests })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Update failed");
+
+    alert("Profile updated!");
+
+  } catch {
+    alert("Could not save profile.");
+  }
+});
+
+// =========================
+// CHAT POPUP LOGIC
+// =========================
+
+const chatPopup = document.getElementById("chat-popup");
+const chatMessages = document.getElementById("chat-messages");
+const chatInput = document.getElementById("chat-input");
+const chatSend = document.getElementById("chat-send");
+const chatClose = document.getElementById("chat-close");
+
+function openChat(username) {
+  document.getElementById("chat-title").textContent = `Chat with ${username}`;
+  chatPopup.style.display = "flex";
+}
+
+function addChatMessage(sender, text) {
+  const div = document.createElement("div");
+  div.innerHTML = `<strong>${sender}:</strong> ${text}`;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+chatSend.addEventListener("click", () => {
+  const msg = chatInput.value.trim();
+  if (!msg) return;
+
+  addChatMessage("You", msg);
+  chatInput.value = "";
+
+  // Fake reply
+  setTimeout(() => {
+    addChatMessage("Them", "Got your message!");
+  }, 500);
+});
+
+chatClose.addEventListener("click", () => {
+  chatPopup.style.display = "none";
+});
+
+// =========================
+// MD LOGO → FULL REFRESH
+// =========================
+
+document.getElementById("home-button").addEventListener("click", () => {
+  window.location.reload();
+});
+
+// =========================
+// INITIAL RENDER
+// =========================
+
+renderProfiles([...demoProfiles]);
