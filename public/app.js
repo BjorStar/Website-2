@@ -121,11 +121,29 @@ function applyLoggedOutUI() {
 }
 
 // =========================
-// RESTORE LOGIN ON REFRESH
+// RESTORE LOGIN ON REFRESH (with backend validation)
 // =========================
 
 const savedUser = localStorage.getItem("loggedInUser");
-if (savedUser) applyLoggedInUI(savedUser);
+
+if (savedUser) {
+  try {
+    const res = await fetch(`${API_BASE}/api/profiles/${savedUser}`);
+
+    if (res.ok) {
+      // User exists in backend → keep logged in
+      applyLoggedInUI(savedUser);
+    } else {
+      // User does NOT exist → clear fake login
+      localStorage.removeItem("loggedInUser");
+      applyLoggedOutUI();
+    }
+  } catch {
+    // Backend unreachable → assume logout
+    localStorage.removeItem("loggedInUser");
+    applyLoggedOutUI();
+  }
+}
 
 // =========================
 // REGISTER
