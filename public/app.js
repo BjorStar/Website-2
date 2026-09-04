@@ -11,15 +11,15 @@ const searchSection = document.getElementById("search");
 const accountSection = document.getElementById("my-account");
 
 // =========================
-// DEMO PROFILES (always shown)
+// DEMO PROFILES
 // =========================
 
 const demoProfiles = [
-  {username:'Aino (DEMO)', age:27, bio:'Coffee lover and weekend hiker', interests:['hiking','coffee','photography']},
-  {username:'Mikko (DEMO)', age:31, bio:'Tech nerd who cooks', interests:['cooking','tech','gaming']},
-  {username:'Sara (DEMO)', age:24, bio:'Yoga instructor and plant parent', interests:['yoga','plants','travel']},
-  {username:'Jon (DEMO)', age:29, bio:'Board games and craft beer', interests:['board games','beer','hiking']},
-  {username:'Liisa (DEMO)', age:26, bio:'Designer who loves cats', interests:['design','cats','art']},
+  { username: "Aino (DEMO)", age: 27, bio: "Coffee lover and weekend hiker", interests: ["hiking", "coffee", "photography"] },
+  { username: "Mikko (DEMO)", age: 31, bio: "Tech nerd who cooks", interests: ["cooking", "tech", "gaming"] },
+  { username: "Sara (DEMO)", age: 24, bio: "Yoga instructor and plant parent", interests: ["yoga", "plants", "travel"] },
+  { username: "Jon (DEMO)", age: 29, bio: "Board games and craft beer", interests: ["board games", "beer", "hiking"] },
+  { username: "Liisa (DEMO)", age: 26, bio: "Designer who loves cats", interests: ["design", "cats", "art"] }
 ];
 
 // =========================
@@ -32,34 +32,50 @@ function renderProfiles(items) {
   items.forEach(p => {
     const li = document.createElement("li");
     li.className = "profile";
+
     li.innerHTML = `
       <div class="avatar">${p.username.charAt(0).toUpperCase()}</div>
       <div class="meta">
         <h4>${p.username}, <span style="color:var(--muted);">${p.age}</span></h4>
         <p>${p.bio}</p>
-        <div class="tags">${p.interests.map(i => `<span class="tag">${i}</span>`).join("")}</div>
+        <div class="tags">
+          ${p.interests.map(i => `<span class="tag">${i}</span>`).join("")}
+        </div>
       </div>
       <div class="profile-actions">
         <button class="btn-ghost">Like</button>
         <button class="btn-ghost">Message</button>
       </div>
     `;
+
     profilesList.appendChild(li);
   });
 }
 
 // =========================
-// ALWAYS SHOW DEMO + REAL
+// LOAD PROFILES (with demo filtering)
 // =========================
 
 async function loadProfiles(interest) {
   profilesList.innerHTML = "<li>Loading...</li>";
 
+  const normalizedInterest = interest ? interest.toLowerCase() : null;
+
+  // Filter demo profiles
+  let filteredDemo = demoProfiles;
+
+  if (normalizedInterest) {
+    filteredDemo = demoProfiles.filter(p =>
+      p.interests.some(i => i.toLowerCase().includes(normalizedInterest))
+    );
+  }
+
+  // Fetch real profiles
   let realProfiles = [];
 
   try {
-    const url = interest
-      ? `${API_BASE}/api/profiles/search?interest=${encodeURIComponent(interest)}`
+    const url = normalizedInterest
+      ? `${API_BASE}/api/profiles/search?interest=${encodeURIComponent(normalizedInterest)}`
       : `${API_BASE}/api/profiles`;
 
     const res = await fetch(url);
@@ -71,7 +87,8 @@ async function loadProfiles(interest) {
     } catch {}
   } catch {}
 
-  const combined = [...demoProfiles, ...realProfiles];
+  // Combine filtered demo + real
+  const combined = [...filteredDemo, ...realProfiles];
   renderProfiles(combined);
 }
 
@@ -130,7 +147,9 @@ document.getElementById("register-form").addEventListener("submit", async e => {
   const bio = document.getElementById("reg-bio").value.trim();
   const interestsRaw = document.getElementById("reg-interests").value.trim();
 
-  const interests = interestsRaw ? interestsRaw.split(",").map(i => i.trim()).filter(Boolean) : [];
+  const interests = interestsRaw
+    ? interestsRaw.split(",").map(i => i.trim().toLowerCase()).filter(Boolean)
+    : [];
 
   try {
     const res = await fetch(`${API_BASE}/api/register`, {
@@ -260,7 +279,10 @@ document.getElementById("save-profile-btn").addEventListener("click", async () =
   const age = document.getElementById("acc-age").value;
   const bio = document.getElementById("acc-bio").value.trim();
   const interestsRaw = document.getElementById("acc-interests").value.trim();
-  const interests = interestsRaw ? interestsRaw.split(",").map(i => i.trim()).filter(Boolean) : [];
+
+  const interests = interestsRaw
+    ? interestsRaw.split(",").map(i => i.trim().toLowerCase()).filter(Boolean)
+    : [];
 
   try {
     const res = await fetch(`${API_BASE}/api/profiles/${username}`, {
