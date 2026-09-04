@@ -93,46 +93,41 @@ button {
 
 .card {
   background: var(--surface);
-  padding: 20px;
+  padding: 25px;
   border-radius: 10px;
   border: 1px solid var(--border);
   margin-bottom: 25px;
 }
 
 /* =========================
-   INPUTS
-   ========================= */
-
-input,
-textarea {
-  width: 100%;
-  padding: 10px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text);
-  font-size: 15px;
-  margin-bottom: 12px;
-}
-
-textarea {
-  min-height: 80px;
-  resize: vertical;
-}
-
-/* =========================
-   LABELS
+   INPUTS + LABELS
    ========================= */
 
 label {
   display: block;
   font-weight: 600;
   margin-bottom: 6px;
-  margin-top: 10px;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 15px;
+  margin-bottom: 18px;
+}
+
+textarea {
+  min-height: 90px;
+  resize: vertical;
 }
 
 /* =========================
-   MY ACCOUNT (EDITING FORM)
+   MY ACCOUNT (EDIT FORM)
    ========================= */
 
 #my-account {
@@ -141,8 +136,13 @@ label {
   gap: 4px;
 }
 
+#my-account input,
+#my-account textarea {
+  background: var(--surface-2);
+}
+
 #save-profile-btn {
-  margin-top: 15px;
+  margin-top: 10px;
   width: 100%;
 }
 
