@@ -44,7 +44,7 @@ function renderProfiles(items) {
       </div>
       <div class="profile-actions">
         <button class="btn-ghost">Like</button>
-        <button class="btn-ghost">Message</button>
+        <button class="btn-ghost" onclick="openChat('${p.username}')">Message</button>
       </div>
     `;
 
@@ -87,7 +87,6 @@ async function loadProfiles(interest) {
     } catch {}
   } catch {}
 
-  // Combine filtered demo + real
   const combined = [...filteredDemo, ...realProfiles];
   renderProfiles(combined);
 }
@@ -302,6 +301,45 @@ document.getElementById("save-profile-btn").addEventListener("click", async () =
 });
 
 // =========================
+// CHAT POPUP LOGIC
+// =========================
+
+const chatPopup = document.getElementById("chat-popup");
+const chatMessages = document.getElementById("chat-messages");
+const chatInput = document.getElementById("chat-input");
+const chatSend = document.getElementById("chat-send");
+const chatClose = document.getElementById("chat-close");
+
+function openChat(username) {
+  document.getElementById("chat-title").textContent = `Chat with ${username}`;
+  chatPopup.style.display = "flex";
+}
+
+function addChatMessage(sender, text) {
+  const div = document.createElement("div");
+  div.innerHTML = `<strong>${sender}:</strong> ${text}`;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+chatSend.addEventListener("click", () => {
+  const msg = chatInput.value.trim();
+  if (!msg) return;
+
+  addChatMessage("You", msg);
+  chatInput.value = "";
+
+  // Fake reply
+  setTimeout(() => {
+    addChatMessage("Them", "Got your message!");
+  }, 500);
+});
+
+chatClose.addEventListener("click", () => {
+  chatPopup.style.display = "none";
+});
+
+// =========================
 // MD LOGO → FULL REFRESH
 // =========================
 
@@ -314,3 +352,4 @@ document.getElementById("home-button").addEventListener("click", () => {
 // =========================
 
 renderProfiles([...demoProfiles]);
+
