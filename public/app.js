@@ -2,7 +2,6 @@
 // CONFIG
 // =========================
 
-// IMPORTANT: Replace with YOUR Render backend URL
 const API_BASE = "https://website-testing-teqc.onrender.com";
 
 const authMessage = document.getElementById('auth-message');
@@ -15,11 +14,11 @@ const searchSection = document.getElementById('search');
 // =========================
 
 const demoProfiles = [
-  {username:'(DEMO) Aino', age:27, bio:'Coffee lover and weekend hiker', interests:['hiking','coffee','photography']},
-  {username:'(DEMO) Mikko', age:31, bio:'Tech nerd who cooks', interests:['cooking','tech','gaming']},
-  {username:'(DEMO) Sara', age:24, bio:'Yoga instructor and plant parent', interests:['yoga','plants','travel']},
-  {username:'(DEMO) Jon', age:29, bio:'Board games and craft beer', interests:['board games','beer','hiking']},
-  {username:'(DEMO) Liisa', age:26, bio:'Designer who loves cats', interests:['design','cats','art']},
+  {username:'Aino', age:27, bio:'Coffee lover and weekend hiker', interests:['hiking','coffee','photography']},
+  {username:'Mikko', age:31, bio:'Tech nerd who cooks', interests:['cooking','tech','gaming']},
+  {username:'Sara', age:24, bio:'Yoga instructor and plant parent', interests:['yoga','plants','travel']},
+  {username:'Jon', age:29, bio:'Board games and craft beer', interests:['board games','beer','hiking']},
+  {username:'Liisa', age:26, bio:'Designer who loves cats', interests:['design','cats','art']},
 ];
 
 // =========================
@@ -104,6 +103,35 @@ document.getElementById('search-button').addEventListener('click', () => {
 });
 
 // =========================
+// LOGIN STATE HELPERS
+// =========================
+
+function applyLoggedInUI(username) {
+  document.getElementById("user-display").textContent = username;
+  document.getElementById("welcome-box").style.display = "block";
+  document.getElementById("logout-btn").style.display = "inline-block";
+  document.getElementById("show-login").style.display = "none";
+  document.getElementById("show-register").style.display = "none";
+}
+
+function applyLoggedOutUI() {
+  document.getElementById("welcome-box").style.display = "none";
+  document.getElementById("user-display").textContent = "";
+  document.getElementById("logout-btn").style.display = "none";
+  document.getElementById("show-login").style.display = "inline-block";
+  document.getElementById("show-register").style.display = "inline-block";
+}
+
+// =========================
+// RESTORE LOGIN ON REFRESH
+// =========================
+
+const savedUser = localStorage.getItem("loggedInUser");
+if (savedUser) {
+  applyLoggedInUI(savedUser);
+}
+
+// =========================
 // REGISTER
 // =========================
 
@@ -141,12 +169,10 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
     authMessage.textContent = `Registered as ${data.user.username}`;
     authMessage.style.color = "var(--accent-2)";
 
-    // Update header UI
-    document.getElementById("user-display").textContent = data.user.username;
-    document.getElementById("welcome-box").style.display = "block";
-    document.getElementById("logout-btn").style.display = "inline-block";
-    document.getElementById("show-login").style.display = "none";
-    document.getElementById("show-register").style.display = "none";
+    // Save login state
+    localStorage.setItem("loggedInUser", data.user.username);
+
+    applyLoggedInUI(data.user.username);
 
   } catch (err) {
     authMessage.textContent = err.message;
@@ -185,12 +211,10 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     authMessage.textContent = `Welcome back, ${data.user.username}`;
     authMessage.style.color = "var(--accent-2)";
 
-    // Update header UI
-    document.getElementById("user-display").textContent = data.user.username;
-    document.getElementById("welcome-box").style.display = "block";
-    document.getElementById("logout-btn").style.display = "inline-block";
-    document.getElementById("show-login").style.display = "none";
-    document.getElementById("show-register").style.display = "none";
+    // Save login state
+    localStorage.setItem("loggedInUser", data.user.username);
+
+    applyLoggedInUI(data.user.username);
 
   } catch (err) {
     authMessage.textContent = err.message;
@@ -223,12 +247,8 @@ document.getElementById("show-register").addEventListener("click", () => {
 // =========================
 
 document.getElementById("logout-btn").addEventListener("click", () => {
-  document.getElementById("welcome-box").style.display = "none";
-  document.getElementById("user-display").textContent = "";
-
-  document.getElementById("logout-btn").style.display = "none";
-  document.getElementById("show-login").style.display = "inline-block";
-  document.getElementById("show-register").style.display = "inline-block";
+  localStorage.removeItem("loggedInUser");
+  applyLoggedOutUI();
 
   authMessage.textContent = "";
 
@@ -241,3 +261,4 @@ document.getElementById("logout-btn").addEventListener("click", () => {
 // =========================
 
 renderProfiles(demoProfiles);
+
