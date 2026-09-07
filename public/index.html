@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mini Dating Site</title>
+
+  <!-- Google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Main stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- HEADER -->
+    <header>
+      <div class="brand">
+        <button id="home-button" class="logo-btn">MD</button>
+        <div>
+          <h1>Mini Dating Site</h1>
+          <p class="lead">Find people who share your interests</p>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;align-items:center">
+        <div id="welcome-box" style="font-size:13px;color:var(--muted);display:none;">
+          Welcome <strong id="user-display"></strong>
+        </div>
+
+        <button id="liked-profiles-btn" class="secondary">Liked Profiles</button>
+        <button id="my-account-btn" class="secondary" style="display:none;">My Account</button>
+        <button id="show-login" class="secondary">Login</button>
+        <button id="show-register" class="secondary">Register</button>
+        <button id="logout-btn" class="secondary" style="display:none;">Logout</button>
+      </div>
+    </header>
+
+    <!-- AUTH SECTION -->
+    <section id="auth" class="card" style="display:none;">
+
+      <!-- REGISTER BLOCK -->
+      <div id="register-block" style="display:none;">
+        <h2>Register</h2>
+
+        <form id="register-form" autocomplete="off">
+          <div class="field">
+            <label for="reg-username">Username</label>
+            <input type="text" id="reg-username" required />
+          </div>
+
+          <div class="field">
+            <label for="reg-password">Password</label>
+            <input type="password" id="reg-password" required />
+          </div>
+
+          <div class="field">
+            <label for="reg-age">Age</label>
+            <input type="number" id="reg-age" min="18" />
+          </div>
+
+          <div class="field">
+            <label for="reg-bio">Bio</label>
+            <input type="text" id="reg-bio" />
+          </div>
+
+          <div class="field">
+            <label for="reg-interests">Interests (comma separated)</label>
+            <input type="text" id="reg-interests" />
+          </div>
+
+          <button type="submit">Create account</button>
+        </form>
+      </div>
+
+      <!-- LOGIN BLOCK -->
+      <div id="login-block" style="display:none;">
+        <h2>Login</h2>
+
+        <form id="login-form" autocomplete="off">
+          <div class="field">
+            <label for="login-username">Username</label>
+            <input type="text" id="login-username" required />
+          </div>
+
+          <div class="field">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" required />
+          </div>
+
+          <button type="submit">Login</button>
+        </form>
+      </div>
+
+      <p id="auth-message"></p>
+    </section>
+
+    <!-- MY ACCOUNT -->
+    <section id="my-account" class="card" style="display:none;">
+      <h2>My Account</h2>
+
+      <div class="field">
+        <label for="acc-username">Username (read-only)</label>
+        <input id="acc-username" type="text" readonly />
+      </div>
+
+      <div class="field">
+        <label for="acc-age">Age</label>
+        <input id="acc-age" type="number" min="0" />
+      </div>
+
+      <div class="field">
+        <label for="acc-bio">Bio</label>
+        <textarea id="acc-bio"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="acc-interests">Interests (comma separated)</label>
+        <input id="acc-interests" type="text" />
+      </div>
+
+      <button id="save-profile-btn" class="secondary">Save Changes</button>
+    </section>
+
+    <!-- SEARCH / PROFILES -->
+    <section id="search" class="card">
+      <h2>Browse Profiles</h2>
+
+      <div class="controls">
+        <button id="load-profiles" class="btn-ghost">Load all profiles</button>
+        <div style="flex:1"></div>
+      </div>
+
+      <h3 style="margin:8px 0 6px 0;color:var(--muted);">Search by interest</h3>
+
+      <div class="controls" style="margin-bottom:18px;">
+        <input type="text" id="search-interest" placeholder="e.g. hiking" />
+        <button id="search-button">Search</button>
+      </div>
+
+      <ul id="profiles-list"></ul>
+    </section>
+
+  </div>
+
+  <!-- CHAT POPUP -->
+  <div id="chat-popup">
+    <div id="chat-header">
+      <span id="chat-title">Chat</span>
+      <button id="chat-close">×</button>
+    </div>
+
+    <div id="chat-messages"></div>
+
+    <div id="chat-input-area">
+      <input id="chat-input" type="text" placeholder="Type a message..." />
+      <button id="chat-send">Send</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
