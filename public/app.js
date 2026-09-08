@@ -2,7 +2,7 @@
 // CONFIG
 // =========================
 
-const API_BASE = "https://website-testing-teqc.onrender.com";
+const API_BASE = "https://cgi.arcada.fi/~YOURNAME/cgi-bin";
 
 const authMessage = document.getElementById("auth-message");
 const profilesList = document.getElementById("profiles-list");
@@ -68,7 +68,7 @@ function renderProfiles(items) {
 }
 
 // =========================
-// LIKE / UNLIKE TOGGLE
+// LIKE / UNLIKE
 // =========================
 
 function toggleLike(username) {
@@ -103,8 +103,8 @@ async function loadProfiles(interest) {
 
   try {
     const url = normalizedInterest
-      ? `${API_BASE}/api/profiles/search?interest=${encodeURIComponent(normalizedInterest)}`
-      : `${API_BASE}/api/profiles`;
+      ? `${API_BASE}/search.js?interest=${encodeURIComponent(normalizedInterest)}`
+      : `${API_BASE}/profiles.js`;
 
     const res = await fetch(url);
     const text = await res.text();
@@ -163,7 +163,7 @@ const savedUser = localStorage.getItem("loggedInUser");
 if (savedUser) applyLoggedInUI(savedUser);
 
 // =========================
-// REGISTER
+// REGISTER (CGI POST)
 // =========================
 
 document.getElementById("register-form").addEventListener("submit", async e => {
@@ -176,18 +176,25 @@ document.getElementById("register-form").addEventListener("submit", async e => {
   const interestsRaw = document.getElementById("reg-interests").value.trim();
 
   const interests = interestsRaw
-    ? interestsRaw.split(",").map(i => i.trim().toLowerCase()).filter(Boolean)
+    ? interestsRaw.split(",").map(i => i.trim().toLowerCase())
     : [];
 
+  const formData = new URLSearchParams();
+  formData.append("username", username);
+  formData.append("password", password);
+  formData.append("age", age);
+  formData.append("bio", bio);
+  formData.append("interests", JSON.stringify(interests));
+
   try {
-    const res = await fetch(`${API_BASE}/api/register`, {
+    const res = await fetch(`${API_BASE}/register.js`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password, age, bio, interests })
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: formData.toString()
     });
 
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Registration failed");
+    if (data.error) throw new Error(data.error);
 
     authMessage.textContent = `Registered as ${data.user.username}`;
     authMessage.style.color = "var(--accent-2)";
@@ -202,7 +209,7 @@ document.getElementById("register-form").addEventListener("submit", async e => {
 });
 
 // =========================
-// LOGIN
+// LOGIN (CGI POST)
 // =========================
 
 document.getElementById("login-form").addEventListener("submit", async e => {
@@ -211,15 +218,19 @@ document.getElementById("login-form").addEventListener("submit", async e => {
   const username = document.getElementById("login-username").value.trim();
   const password = document.getElementById("login-password").value;
 
+  const formData = new URLSearchParams();
+  formData.append("username", username);
+  formData.append("password", password);
+
   try {
-    const res = await fetch(`${API_BASE}/api/login`, {
+    const res = await fetch(`${API_BASE}/login.js`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: formData.toString()
     });
 
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Login failed");
+    if (data.error) throw new Error(data.error);
 
     authMessage.textContent = `Welcome back, ${data.user.username}`;
     authMessage.style.color = "var(--accent-2)";
@@ -234,7 +245,7 @@ document.getElementById("login-form").addEventListener("submit", async e => {
 });
 
 // =========================
-// AUTH UI SWITCHING (FIXED)
+// AUTH UI SWITCHING
 // =========================
 
 document.getElementById("show-login").addEventListener("click", () => {
@@ -271,7 +282,7 @@ document.getElementById("logout-btn").addEventListener("click", () => {
 });
 
 // =========================
-// MY ACCOUNT + EDITING
+// MY ACCOUNT
 // =========================
 
 document.getElementById("my-account-btn").addEventListener("click", async () => {
@@ -279,8 +290,11 @@ document.getElementById("my-account-btn").addEventListener("click", async () => 
   if (!username) return;
 
   try {
-    const res = await fetch(`${API_BASE}/api/profiles/${username}`);
-    const data = await res.json();
+    const res = await fetch(`${API_BASE}/profiles.js`);
+    const profiles = await res.json();
+
+    const data = profiles.find(p => p.username === username);
+    if (!data) throw new Error("Profile not found");
 
     document.getElementById("acc-username").value = data.username;
     document.getElementById("acc-age").value = data.age || "";
@@ -297,7 +311,7 @@ document.getElementById("my-account-btn").addEventListener("click", async () => 
 });
 
 // =========================
-// SAVE PROFILE EDITS
+// SAVE PROFILE EDITS (CGI POST)
 // =========================
 
 document.getElementById("save-profile-btn").addEventListener("click", async () => {
@@ -309,18 +323,24 @@ document.getElementById("save-profile-btn").addEventListener("click", async () =
   const interestsRaw = document.getElementById("acc-interests").value.trim();
 
   const interests = interestsRaw
-    ? interestsRaw.split(",").map(i => i.trim().toLowerCase()).filter(Boolean)
+    ? interestsRaw.split(",").map(i => i.trim().toLowerCase())
     : [];
 
+  const formData = new URLSearchParams();
+  formData.append("username", username);
+  formData.append("age", age);
+  formData.append("bio", bio);
+  formData.append("interests", JSON.stringify(interests));
+
   try {
-    const res = await fetch(`${API_BASE}/api/profiles/${username}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ age, bio, interests })
+    const res = await fetch(`${API_BASE}/register.js`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: formData.toString()
     });
 
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Update failed");
+    if (data.error) throw new Error(data.error);
 
     alert("Profile updated!");
 
@@ -330,7 +350,7 @@ document.getElementById("save-profile-btn").addEventListener("click", async () =
 });
 
 // =========================
-// CHAT POPUP LOGIC
+// CHAT POPUP
 // =========================
 
 const chatPopup = document.getElementById("chat-popup");
@@ -368,7 +388,7 @@ chatClose.addEventListener("click", () => {
 });
 
 // =========================
-// LIKED PROFILES BUTTON
+// LIKED PROFILES
 // =========================
 
 document.getElementById("liked-profiles-btn").addEventListener("click", () => {
@@ -377,7 +397,7 @@ document.getElementById("liked-profiles-btn").addEventListener("click", () => {
 });
 
 // =========================
-// MD LOGO → FULL REFRESH
+// HOME BUTTON
 // =========================
 
 document.getElementById("home-button").addEventListener("click", () => {
@@ -391,5 +411,5 @@ document.getElementById("home-button").addEventListener("click", () => {
 currentProfileList = [...demoProfiles];
 renderProfiles([...demoProfiles]);
 
-// Show login by default
 document.getElementById("login-block").style.display = "block";
+
