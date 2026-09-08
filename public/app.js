@@ -2,7 +2,7 @@
 // CONFIG
 // =========================
 
-const API_BASE = "https://cgi.arcada.fi/~YOURNAME/cgi-bin";
+const API_BASE = "https://cgi.arcada.fi/bjorstar/projekt-2-backend";
 
 const authMessage = document.getElementById("auth-message");
 const profilesList = document.getElementById("profiles-list");
